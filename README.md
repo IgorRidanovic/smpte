@@ -2,6 +2,7 @@
 
 ## Usage Examples
 
+```
 s = SMPTE()
 
 &#35; Convert 24 timecode string to frame count (24 is set by default)
@@ -13,6 +14,7 @@ s.fps = 29.97
 s.df = True
 frameCount = 1800
 print(s.gettc(frameCount))
+```
 
 ## Frame Rates and Drop Frame
 
