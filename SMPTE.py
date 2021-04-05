@@ -11,16 +11,12 @@ class SMPTE(object):
 		self.fps = 24
 		self.df  = False
 
-
 	def getframes(self, tc):
 		'''Converts SMPTE timecode to frame count.'''
 
 		# Always round fractional frame rate.
 		self.fps = int(round(self.fps))
 
-		# Validate timecode
-		if len(tc) != 11:
-			raise ValueError ('Malformed SMPTE timecode', tc)
 		if int(tc[9:]) > self.fps:
 			raise ValueError ('SMPTE timecode to frame rate mismatch.', tc, self.fps)
 
@@ -44,44 +40,52 @@ class SMPTE(object):
 	def gettc(self, frames):
 		'''Converts frame count to SMPTE timecode.'''
 
+		frames = abs(frames)
+
 		# Always round fractional frame rate.
 		self.fps = int(round(self.fps))
 
-		frames = abs(frames)
-		spacer = spacer2 = ':'
+		# SMPTE string spacer.
+		spacer  = ':'
 
-		# Drop frame adjustment
+		# Drop frame calculation.
 		if self.df:
 			spacer2 = ';'
-			minfactor    = self.fps * 60
-			tenminfactor = self.fps * 600
 
-			# Add 2 frames for each minute...
-			frames += frames/minfactor * 2
-			# ...except every ten minutes
-			frames -= frames/tenminfactor * 2
+			# www.andrewduncan.net/timecodes/ special DF sauce.
+			d = frames // 17982
+			m = frames % 17982
+			frames +=  18 * d + 2 * (m - 2) // 1798
 
-		frHour = self.fps * 3600
-		frSec = self.fps * 60
-		hr = int(frames // frHour)
-		mn = int((frames - hr * frHour) // frSec)
-		sc = int((frames - hr * frHour - mn * frSec) // self.fps)
-		fr = int(round(frames -  hr * frHour - mn * frSec - sc * self.fps))
+			hr = int(frames // self.fps // 60 // 60 % 24)
+			mn = int(frames // self.fps // 60 % 60)
+			sc = int(frames // self.fps % 60)
+			fr = int(frames %  self.fps)
+
+		# Non drop frame calculation.
+		else:
+			spacer2 = spacer
+
+			frHour = self.fps * 3600
+			frMin  = self.fps * 60
+
+			hr = int(frames // frHour)
+			mn = int((frames - hr * frHour) // frMin)
+			sc = int((frames - hr * frHour - mn * frMin) // self.fps)
+			fr = int(round(frames -  hr * frHour - mn * frMin - sc * self.fps))
 
 		return(
 				str(hr).zfill(2) + spacer +
 				str(mn).zfill(2) + spacer +
 				str(sc).zfill(2) + spacer2 +
-				str(fr).zfill(2))
-
+				str(fr).zfill(2)
+				)
 
 if __name__ == '__main__':
 
-	# Drop frame example
+	# Drop frame example.
 	s = SMPTE()
-	s.fps = 29.976
+	s.fps = 29.97
 	s.df = True
-	print s.gettc(1800)
-	print s.getframes('00:01:00:02')
 
-
+	print(s.gettc(1800))
