@@ -1,15 +1,15 @@
-# SMPTE Timecode Arithmetic Class for Python 2.7 and 3.x
+# SMPTE Timecode Arithmetic Class for Python 2.7/3.x
 
 ## Usage Examples
 
 ```
 s = SMPTE()
 
-&#35; Convert 24 timecode string to frame count (24 is set by default)
+# Convert 24 timecode string to frame count (24 is set by default)
 tcString = '01:00:00:00'
 print(s.getframes(tcString))
 
-&#35; Convert frame count to 29.97 drop frame timecode string
+# Convert frame count to 29.97 drop frame timecode string
 s.fps = 29.97
 s.df = True
 frameCount = 1800
