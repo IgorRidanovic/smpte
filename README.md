@@ -24,4 +24,4 @@ In fact, the s.fps = 29.97 in the above example will get rounded to 30, but we u
 
 Remember that all timecode except DF is real time clock inaccurate.
 
-The gettc() uses Andrew Duncan method of calculating the SMPTE timecode string. See his excellent article at http://www.andrewduncan.net/timecodes/.
+We use Andrew Duncan/David Heidelberger method of calculating the drop frame values. See their excellent article at http://www.andrewduncan.net/timecodes/ and https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/.
